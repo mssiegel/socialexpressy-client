@@ -15,16 +15,17 @@ interface GiphyImage {
 }
 
 export default function Home() {
-  const [input, setInput] = useState("");
-  const [data, setData] = useState([]);
+  const [searchTerm, setSearchTerm] = useState("");
+  const [gifSearchResults, setGifSearchResults] = useState([]);
+  const [chosenGif, setChosenGif] = useState("");
 
   const handleSearch = () => {
     fetch(
-      `https://api.giphy.com/v1/gifs/search?api_key=${GIPHY_API_KEY}&q=${input}&limit=30&offset=0&rating=g&lang=en`
+      `https://api.giphy.com/v1/gifs/search?api_key=${GIPHY_API_KEY}&q=${searchTerm}&limit=30&offset=0&rating=g&lang=en`
     )
       .then((result) => result.json())
       .then((data) => {
-        setData(data.data);
+        setGifSearchResults(data.data);
         console.log(data.data[0]);
       })
       .catch((err) => console.log(err));
@@ -44,8 +45,8 @@ export default function Home() {
               type="text"
               placeholder="Search for your dream"
               aria-label="search-gif"
-              value={input}
-              onChange={(e) => setInput(e.target.value)}
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
             />
             <button
               className="flex-shrink-0 bg-teal-500 hover:bg-teal-700 border-teal-500 hover:border-teal-700 text-sm border-4 text-white py-1 px-2 rounded"
@@ -59,15 +60,25 @@ export default function Home() {
 
         <div className="max-w-2xl mx-auto">
           <Masonry columnsCount={2} gutter="15px">
-            {data?.map((el: GiphyImage) => (
+            {gifSearchResults?.map((el: GiphyImage) => (
               <div key={el.id} className="">
                 <img
                   src={el.images.original.url}
                   alt="Sunset in the mountains"
+                  onClick={() => {
+                    setChosenGif(el.images.original.url);
+                    setGifSearchResults([]);
+                  }}
                 />
               </div>
             ))}
           </Masonry>
+
+          {chosenGif && (
+            <div>
+              <img src={chosenGif} alt="Sunset in the mountains" />
+            </div>
+          )}
         </div>
       </div>
     </main>
