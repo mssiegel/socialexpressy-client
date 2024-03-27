@@ -16,7 +16,7 @@ const SERVER_URL = process.env.NEXT_PUBLIC_SERVER_URL;
 
 export default function Home() {
   console.log("rendering home");
-  const [streak, setStreak] = useState(0);
+  const [streak, setStreak] = useState("?");
   const [searchResults, setSearchResults] = useState([]);
   const [selectedGif, setSelectedGif] = useState("");
   const userId = 1; // for user Moshe Siegel
