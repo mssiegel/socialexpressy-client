@@ -75,7 +75,7 @@ export default function Home() {
             </div>
           )}
 
-          <p className="text-right">streak: {streak}</p>
+          <p className="text-center">streak: {streak}</p>
         </div>
       </div>
     </main>
