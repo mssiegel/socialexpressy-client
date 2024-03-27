@@ -12,18 +12,20 @@ interface GiphyImage {
   };
 }
 
+const SERVER_URL = process.env.NEXT_PUBLIC_SERVER_URL;
+
 export default function Home() {
   console.log("rendering home");
   const [streak, setStreak] = useState(0);
   const [searchResults, setSearchResults] = useState([]);
   const [selectedGif, setSelectedGif] = useState("");
-  const userId = 3;
+  const userId = 1; // for user Moshe Siegel
 
   useEffect(() => {
     // immediately show the user streak on page load
     const currentDate = new Date().toISOString();
     const dateParams = new URLSearchParams({ date: currentDate }).toString();
-    fetch(`http://localhost:4000/api/v1/users/${userId}/streak?${dateParams}`)
+    fetch(`${SERVER_URL}/api/v1/users/${userId}/streak?${dateParams}`)
       .then((result) => result.json())
       .then((data) => setStreak(data.streak))
       .catch((err) => console.log(err));
@@ -34,7 +36,7 @@ export default function Home() {
     setSearchResults([]);
     // update query on backend
     const currentDate = new Date().toISOString();
-    fetch(`http://localhost:4000/api/v1/users/${userId}/update-streak`, {
+    fetch(`${SERVER_URL}/api/v1/users/${userId}/update-streak`, {
       method: "PATCH",
       body: JSON.stringify({ date: currentDate }),
       headers: {
@@ -72,6 +74,7 @@ export default function Home() {
               <img src={selectedGif} alt="Sunset in the mountains" />
             </div>
           )}
+
           <p className="text-right">streak: {streak}</p>
         </div>
       </div>
