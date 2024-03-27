@@ -1,9 +1,7 @@
 "use client"; // TODO: investigate whether this 'use client' is necessary
 import Masonry from "react-responsive-masonry";
-
-import { useState } from "react";
-
-const GIPHY_API_KEY = process.env.NEXT_PUBLIC_GIPHY_API_KEY;
+import { useEffect, useState } from "react";
+import SearchGifs from "./components/SearchGifs";
 
 interface GiphyImage {
   id: string;
@@ -15,21 +13,38 @@ interface GiphyImage {
 }
 
 export default function Home() {
-  const [searchTerm, setSearchTerm] = useState("");
-  const [gifSearchResults, setGifSearchResults] = useState([]);
-  const [chosenGif, setChosenGif] = useState("");
+  console.log("rendering home");
+  const [streak, setStreak] = useState(0);
+  const [searchResults, setSearchResults] = useState([]);
+  const [selectedGif, setSelectedGif] = useState("");
+  const userId = 3;
 
-  const handleSearch = () => {
-    fetch(
-      `https://api.giphy.com/v1/gifs/search?api_key=${GIPHY_API_KEY}&q=${searchTerm}&limit=30&offset=0&rating=g&lang=en`
-    )
+  useEffect(() => {
+    // immediately show the user streak on page load
+    const currentDate = new Date().toISOString();
+    const dateParams = new URLSearchParams({ date: currentDate }).toString();
+    fetch(`http://localhost:4000/api/v1/users/${userId}/streak?${dateParams}`)
       .then((result) => result.json())
-      .then((data) => {
-        setGifSearchResults(data.data);
-        console.log(data.data[0]);
-      })
+      .then((data) => setStreak(data.streak))
       .catch((err) => console.log(err));
-  };
+  }, []);
+
+  async function selectGif(gifUrl: string) {
+    setSelectedGif(gifUrl);
+    setSearchResults([]);
+    // update query on backend
+    const currentDate = new Date().toISOString();
+    fetch(`http://localhost:4000/api/v1/users/${userId}/update-streak`, {
+      method: "PATCH",
+      body: JSON.stringify({ date: currentDate }),
+      headers: {
+        "Content-type": "application/json; charset=UTF-8",
+      },
+    })
+      .then((result) => result.json())
+      .then((data) => setStreak(data.streak))
+      .catch((err) => console.log(err));
+  }
 
   return (
     <main>
@@ -38,47 +53,26 @@ export default function Home() {
           This is one of my dreams:
         </p>
 
-        <div className="flex justify-center items-center p-8">
-          <div className="flex items-center border-b border-teal-500 py-2">
-            <input
-              className="appearance-none bg-transparent border-none w-full text-gray-700 mr-3 py-1 px-2 leading-tight focus:outline-none"
-              type="text"
-              placeholder="Search for your dream"
-              aria-label="search-gif"
-              value={searchTerm}
-              onChange={(e) => setSearchTerm(e.target.value)}
-            />
-            <button
-              className="flex-shrink-0 bg-teal-500 hover:bg-teal-700 border-teal-500 hover:border-teal-700 text-sm border-4 text-white py-1 px-2 rounded"
-              type="button"
-              onClick={handleSearch}
-            >
-              Search GIFs
-            </button>
-          </div>
-        </div>
+        <SearchGifs setSearchResults={setSearchResults} />
 
         <div className="max-w-2xl mx-auto">
           <Masonry columnsCount={2} gutter="15px">
-            {gifSearchResults?.map((el: GiphyImage) => (
+            {searchResults?.map((el: GiphyImage) => (
               <div key={el.id} className="">
                 <img
                   src={el.images.original.url}
                   alt="Sunset in the mountains"
-                  onClick={() => {
-                    setChosenGif(el.images.original.url);
-                    setGifSearchResults([]);
-                  }}
+                  onClick={() => selectGif(el.images.original.url)}
                 />
               </div>
             ))}
           </Masonry>
-
-          {chosenGif && (
+          {selectedGif && (
             <div>
-              <img src={chosenGif} alt="Sunset in the mountains" />
+              <img src={selectedGif} alt="Sunset in the mountains" />
             </div>
           )}
+          <p className="text-right">streak: {streak}</p>
         </div>
       </div>
     </main>
