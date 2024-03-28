@@ -21,7 +21,7 @@ export default function SearchGifs({ setSearchResults }) {
   }
 
   return (
-    <main>
+    <>
       <div className="flex justify-center items-center p-8">
         <form
           className="flex items-center border-b border-teal-500 py-2"
@@ -44,6 +44,6 @@ export default function SearchGifs({ setSearchResults }) {
           </button>
         </form>
       </div>
-    </main>
+    </>
   );
 }
