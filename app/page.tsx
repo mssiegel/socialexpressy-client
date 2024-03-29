@@ -1,14 +1,24 @@
-"use client"; // TODO: investigate whether this 'use client' is necessary
-import { useEffect, useState } from "react";
+"use client";
+import { FC, useEffect, useState } from "react";
 import SearchGifs from "./components/SearchGifs";
 import GifDisplay from "./components/GifDisplay";
 
 const SERVER_URL = process.env.NEXT_PUBLIC_SERVER_URL;
 
-export default function Home() {
+export interface GiphyImage {
+  id: string;
+  images: {
+    original: {
+      url: string;
+    };
+  };
+}
+export type Streak = string | number;
+
+const Home: FC = () => {
   console.log("rendering home");
-  const [streak, setStreak] = useState("?");
-  const [searchResults, setSearchResults] = useState([]);
+  const [streak, setStreak] = useState<Streak>("?");
+  const [searchResults, setSearchResults] = useState<GiphyImage[]>([]);
   const userId = 1; // for user Moshe Siegel
 
   useEffect(() => {
@@ -39,4 +49,6 @@ export default function Home() {
       </div>
     </main>
   );
-}
+};
+
+export default Home;

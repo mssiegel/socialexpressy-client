@@ -1,24 +1,24 @@
 "use client";
-import { useState } from "react";
+import { FC, useState, Dispatch, SetStateAction } from "react";
 import Masonry from "react-responsive-masonry";
 
-interface GiphyImage {
-  id: string;
-  images: {
-    original: {
-      url: string;
-    };
-  };
-}
+import { GiphyImage, Streak } from "../page";
 
 const SERVER_URL = process.env.NEXT_PUBLIC_SERVER_URL;
 
-export default function GifDisplay({
+interface GifDisplayProps {
+  userId: number;
+  searchResults: GiphyImage[];
+  setSearchResults: Dispatch<SetStateAction<GiphyImage[]>>;
+  setStreak: Dispatch<SetStateAction<Streak>>;
+}
+
+const GifDisplay: FC<GifDisplayProps> = ({
   userId,
   searchResults,
   setSearchResults,
   setStreak,
-}) {
+}) => {
   const [selectedGif, setSelectedGif] = useState("");
 
   async function selectGif(gifUrl: string) {
@@ -62,4 +62,6 @@ export default function GifDisplay({
       </div>
     </>
   );
-}
+};
+
+export default GifDisplay;

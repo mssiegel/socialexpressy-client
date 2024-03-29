@@ -1,9 +1,15 @@
 "use client";
-import { useState, FormEvent } from "react";
+import { FC, useState, FormEvent, Dispatch, SetStateAction } from "react";
+
+import { GiphyImage } from "../page";
 
 const GIPHY_API_KEY = process.env.NEXT_PUBLIC_GIPHY_API_KEY;
 
-export default function SearchGifs({ setSearchResults }) {
+interface SearchGifsProps {
+  setSearchResults: Dispatch<SetStateAction<GiphyImage[]>>;
+}
+
+const SearchGifs: FC<SearchGifsProps> = ({ setSearchResults }) => {
   const [searchQuery, setSearchQuery] = useState("");
 
   async function search(e: FormEvent) {
@@ -46,4 +52,6 @@ export default function SearchGifs({ setSearchResults }) {
       </div>
     </>
   );
-}
+};
+
+export default SearchGifs;
