@@ -13,7 +13,7 @@ export interface GiphyImage {
     };
   };
 }
-export type Streak = string | number;
+export type Streak = "?" | number;
 
 const Home: FC = () => {
   console.log("rendering home");

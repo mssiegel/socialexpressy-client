@@ -1,6 +1,7 @@
 "use client";
 import { FC, useState, Dispatch, SetStateAction } from "react";
 import Masonry from "react-responsive-masonry";
+import Image from "next/image";
 
 import { GiphyImage, Streak } from "../page";
 
@@ -42,9 +43,11 @@ const GifDisplay: FC<GifDisplayProps> = ({
         <Masonry columnsCount={2} gutter="15px">
           {searchResults?.map((el: GiphyImage) => (
             <div key={el.id} className="">
-              <img
+              <Image
                 src={el.images.original.url}
                 alt="Sunset in the mountains"
+                width={300}
+                height={300}
                 onClick={() => selectGif(el.images.original.url)}
               />
             </div>
@@ -52,10 +55,12 @@ const GifDisplay: FC<GifDisplayProps> = ({
         </Masonry>
         {selectedGif && (
           <div className="flex justify-center">
-            <img
+            <Image
               src={selectedGif}
               className="max-w-lg border-dashed border-2 border-silver"
               alt="Selected Gif"
+              width={500}
+              height={500}
             />
           </div>
         )}
