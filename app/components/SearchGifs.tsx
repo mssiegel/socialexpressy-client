@@ -35,7 +35,7 @@ const SearchGifs: FC<SearchGifsProps> = ({ setSearchResults }) => {
       })
       .catch((err) => console.log(err));
 
-    isMobileDevice() && removeFocus("searchGif");
+    isMobileDevice() && removeFocus("searchGifId");
   }
 
   return (
@@ -46,7 +46,7 @@ const SearchGifs: FC<SearchGifsProps> = ({ setSearchResults }) => {
           onSubmit={search}
         >
           <input
-            id="searchGif"
+            id="searchGifId"
             className="appearance-none bg-transparent border-none w-full text-gray-700 mr-3 py-1 px-2 leading-tight focus:outline-none"
             type="text"
             placeholder="Search for your dream"
