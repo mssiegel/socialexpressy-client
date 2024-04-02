@@ -12,6 +12,16 @@ interface SearchGifsProps {
 const SearchGifs: FC<SearchGifsProps> = ({ setSearchResults }) => {
   const [searchQuery, setSearchQuery] = useState("");
 
+  function isMobileDevice() {
+    const minWidth = 768; // Minimum width for desktop devices
+    return window.innerWidth < minWidth || screen.width < minWidth;
+  }
+
+  function removeFocus(cssId: string) {
+    // blurs the search input to hide keyboard on mobile after form submission
+    document.getElementById(cssId)?.blur();
+  }
+
   async function search(e: FormEvent) {
     console.log("form submitted");
     e.preventDefault();
@@ -24,6 +34,8 @@ const SearchGifs: FC<SearchGifsProps> = ({ setSearchResults }) => {
         console.log(data.data[0]);
       })
       .catch((err) => console.log(err));
+
+    isMobileDevice() && removeFocus("searchGif");
   }
 
   return (
@@ -34,6 +46,7 @@ const SearchGifs: FC<SearchGifsProps> = ({ setSearchResults }) => {
           onSubmit={search}
         >
           <input
+            id="searchGif"
             className="appearance-none bg-transparent border-none w-full text-gray-700 mr-3 py-1 px-2 leading-tight focus:outline-none"
             type="text"
             placeholder="Search for your dream"
