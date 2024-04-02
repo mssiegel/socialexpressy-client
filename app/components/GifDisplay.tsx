@@ -48,6 +48,7 @@ const GifDisplay: FC<GifDisplayProps> = ({
                 alt="Sunset in the mountains"
                 width={300}
                 height={300}
+                unoptimized
                 onClick={() => selectGif(el.images.original.url)}
               />
             </div>
@@ -59,6 +60,7 @@ const GifDisplay: FC<GifDisplayProps> = ({
               src={selectedGif}
               className="max-w-lg border-dashed border-2 border-silver"
               alt="Selected Gif"
+              unoptimized
               width={500}
               height={500}
             />
