@@ -48,11 +48,11 @@ const SearchGifs: FC<SearchGifsProps> = ({ setSearchResults }) => {
           <input
             id="searchGifId"
             className="appearance-none bg-transparent border-none w-full text-gray-700 mr-3 py-1 px-2 leading-tight focus:outline-none"
-            type="text"
-            placeholder="Search for your dream"
+            placeholder="Enter a search query"
             aria-label="search-gif"
             value={searchQuery}
             autoFocus
+            autoComplete="off"
             onChange={(e) => setSearchQuery(e.target.value)}
           />
           <button
