@@ -1,5 +1,6 @@
 "use client";
 import { FC, useEffect, useState } from "react";
+import JournalingPrompt from "./components/JournalingPrompt";
 import SearchGifs from "./components/SearchGifs";
 import GifDisplay from "./components/GifDisplay";
 
@@ -33,20 +34,15 @@ const Home: FC = () => {
 
   return (
     <main>
-      <div>
-        <p className="text-center font-sans font-bold text-violet-600 text-2xl">
-          This is one of my dreams:
-        </p>
-
-        <SearchGifs setSearchResults={setSearchResults} />
-        <GifDisplay
-          userId={userId}
-          searchResults={searchResults}
-          setSearchResults={setSearchResults}
-          setStreak={setStreak}
-        />
-        <p className="text-center">daily streak: {streak}</p>
-      </div>
+      <JournalingPrompt />
+      <SearchGifs setSearchResults={setSearchResults} />
+      <GifDisplay
+        userId={userId}
+        searchResults={searchResults}
+        setSearchResults={setSearchResults}
+        setStreak={setStreak}
+      />
+      <p className="text-center">daily streak: {streak}</p>
     </main>
   );
 };
