@@ -3,7 +3,7 @@ import { FC, useState, Dispatch, SetStateAction } from "react";
 import Masonry from "react-responsive-masonry";
 import Image from "next/image";
 
-import { GiphyImage, Streak } from "../page";
+import { GiphyImage, RequestStatus, Streak } from "../page";
 
 const SERVER_URL = process.env.NEXT_PUBLIC_SERVER_URL;
 
@@ -12,6 +12,7 @@ interface GifDisplayProps {
   searchResults: GiphyImage[];
   setSearchResults: Dispatch<SetStateAction<GiphyImage[]>>;
   setStreak: Dispatch<SetStateAction<Streak>>;
+  searchStatus: RequestStatus;
 }
 
 const GifDisplay: FC<GifDisplayProps> = ({
@@ -19,6 +20,7 @@ const GifDisplay: FC<GifDisplayProps> = ({
   searchResults,
   setSearchResults,
   setStreak,
+  searchStatus,
 }) => {
   const [selectedGif, setSelectedGif] = useState("");
 
@@ -37,6 +39,14 @@ const GifDisplay: FC<GifDisplayProps> = ({
       .catch((err) => console.log(err));
   }
 
+  if (searchStatus === "PENDING")
+    return <p className="text-center">Loading gifs</p>;
+  if (searchStatus === "ERROR")
+    return (
+      <p className="text-center text-red-600">
+        Error fetching gifs. Try again.
+      </p>
+    );
   return (
     <>
       <div className="max-w-2xl mx-auto">

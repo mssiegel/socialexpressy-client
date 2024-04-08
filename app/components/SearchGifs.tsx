@@ -1,15 +1,19 @@
 "use client";
 import { FC, useState, FormEvent, Dispatch, SetStateAction } from "react";
 
-import { GiphyImage } from "../page";
+import { GiphyImage, RequestStatus } from "../page";
 
 const GIPHY_API_KEY = process.env.NEXT_PUBLIC_GIPHY_API_KEY;
 
 interface SearchGifsProps {
   setSearchResults: Dispatch<SetStateAction<GiphyImage[]>>;
+  setSearchStatus: Dispatch<SetStateAction<RequestStatus>>;
 }
 
-const SearchGifs: FC<SearchGifsProps> = ({ setSearchResults }) => {
+const SearchGifs: FC<SearchGifsProps> = ({
+  setSearchResults,
+  setSearchStatus,
+}) => {
   const [searchQuery, setSearchQuery] = useState("");
 
   function isMobileDevice() {
@@ -25,6 +29,7 @@ const SearchGifs: FC<SearchGifsProps> = ({ setSearchResults }) => {
   async function search(e: FormEvent) {
     console.log("form submitted");
     e.preventDefault();
+    setSearchStatus("PENDING");
     fetch(
       `https://api.giphy.com/v1/gifs/search?api_key=${GIPHY_API_KEY}&q=${searchQuery}&limit=30&offset=0&rating=g&lang=en`
     )
@@ -32,8 +37,12 @@ const SearchGifs: FC<SearchGifsProps> = ({ setSearchResults }) => {
       .then((data) => {
         setSearchResults(data.data);
         console.log(data.data[0]);
+        setSearchStatus("FINISHED");
       })
-      .catch((err) => console.log(err));
+      .catch((err) => {
+        console.log(err);
+        setSearchStatus("ERROR");
+      });
 
     isMobileDevice() && removeFocus("searchGifId");
   }
@@ -51,6 +60,7 @@ const SearchGifs: FC<SearchGifsProps> = ({ setSearchResults }) => {
             placeholder="Enter a search query"
             aria-label="search-gif"
             value={searchQuery}
+            maxLength={50}
             autoFocus
             autoComplete="off"
             onChange={(e) => setSearchQuery(e.target.value)}

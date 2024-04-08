@@ -15,11 +15,13 @@ export interface GiphyImage {
   };
 }
 export type Streak = "?" | number;
+export type RequestStatus = "ERROR" | "PENDING" | "NONE" | "FINISHED";
 
 const Home: FC = () => {
   console.log("rendering home");
   const [streak, setStreak] = useState<Streak>("?");
   const [searchResults, setSearchResults] = useState<GiphyImage[]>([]);
+  const [searchStatus, setSearchStatus] = useState<RequestStatus>("NONE");
   const userId = 1; // for user Moshe Siegel
 
   useEffect(() => {
@@ -35,12 +37,16 @@ const Home: FC = () => {
   return (
     <main>
       <JournalingPrompt />
-      <SearchGifs setSearchResults={setSearchResults} />
+      <SearchGifs
+        setSearchResults={setSearchResults}
+        setSearchStatus={setSearchStatus}
+      />
       <GifDisplay
         userId={userId}
         searchResults={searchResults}
         setSearchResults={setSearchResults}
         setStreak={setStreak}
+        searchStatus={searchStatus}
       />
       <p className="text-center">daily streak: {streak}</p>
     </main>
