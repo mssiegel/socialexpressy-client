@@ -1,5 +1,5 @@
 "use client";
-import { FC, useState, Dispatch, SetStateAction } from "react";
+import { FC, Dispatch, SetStateAction } from "react";
 import Masonry from "react-responsive-masonry";
 import Image from "next/image";
 
@@ -8,11 +8,29 @@ import { GiphyImage, RequestStatus, Streak } from "../page";
 const SERVER_URL = process.env.NEXT_PUBLIC_SERVER_URL;
 
 interface GifDisplayProps {
-  userId: number;
+  userId: string;
   searchResults: GiphyImage[];
   setSearchResults: Dispatch<SetStateAction<GiphyImage[]>>;
   setStreak: Dispatch<SetStateAction<Streak>>;
   searchStatus: RequestStatus;
+  selectedGif: string;
+  setSelectedGif: Dispatch<SetStateAction<string>>;
+}
+
+export async function updateStreakAPICall(
+  userId: string,
+  setStreak: Dispatch<SetStateAction<Streak>>
+) {
+  // informs backend database that user journaled today
+  const currentDate = new Date().toISOString();
+  fetch(`${SERVER_URL}/api/v1/users/${userId}/update-streak`, {
+    method: "PATCH",
+    body: JSON.stringify({ date: currentDate }),
+    headers: { "Content-type": "application/json; charset=UTF-8" },
+  })
+    .then((result) => result.json())
+    .then((data) => setStreak(data.streak))
+    .catch((err) => console.log(err));
 }
 
 const GifDisplay: FC<GifDisplayProps> = ({
@@ -21,22 +39,14 @@ const GifDisplay: FC<GifDisplayProps> = ({
   setSearchResults,
   setStreak,
   searchStatus,
+  selectedGif,
+  setSelectedGif,
 }) => {
-  const [selectedGif, setSelectedGif] = useState("");
-
-  async function selectGif(gifUrl: string) {
+  function selectGif(gifUrl: string) {
     setSelectedGif(gifUrl);
     setSearchResults([]);
-    // update streak on backend
-    const currentDate = new Date().toISOString();
-    fetch(`${SERVER_URL}/api/v1/users/${userId}/update-streak`, {
-      method: "PATCH",
-      body: JSON.stringify({ date: currentDate }),
-      headers: { "Content-type": "application/json; charset=UTF-8" },
-    })
-      .then((result) => result.json())
-      .then((data) => setStreak(data.streak))
-      .catch((err) => console.log(err));
+    if (!userId) return;
+    updateStreakAPICall(userId, setStreak);
   }
 
   if (searchStatus === "PENDING")

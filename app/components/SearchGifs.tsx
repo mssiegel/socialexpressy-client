@@ -66,7 +66,7 @@ const SearchGifs: FC<SearchGifsProps> = ({
             onChange={(e) => setSearchQuery(e.target.value)}
           />
           <button
-            className="flex-shrink-0 bg-teal-500 hover:bg-teal-700 border-teal-500 hover:border-teal-700 text-sm border-4 text-white py-1 px-2 rounded"
+            className="flex-shrink-0 bg-teal-500 hover:bg-teal-700 text-sm text-white py-2 px-3 rounded"
             type="submit"
           >
             Search GIFs
