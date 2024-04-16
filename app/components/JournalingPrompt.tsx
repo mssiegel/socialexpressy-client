@@ -1,7 +1,7 @@
 "use client";
-import { FC } from "react";
+import { FC, useEffect, useState } from "react";
 
-const questions = [
+const journalingQuestions = [
   "What's a mistake that taught me empathy?",
   "What's a new way I can challenge myself?",
   "What's a thought that's been holding me back?",
@@ -36,18 +36,33 @@ const questions = [
 ];
 
 const JournalingPrompt: FC = () => {
-  function getQuestionOfTheDay(journalingQuestions: string[]) {
+  const [todaysQuestion, setTodaysQuestion] = useState(getTodaysQuestion());
+
+  useEffect(() => {
+    /* This "visibilitychange" event listener will update the daily question when user
+       minifies the app on their device and then reopens it the next day */
+    document.addEventListener("visibilitychange", onVisibilityChange);
+
+    function onVisibilityChange() {
+      if (document.visibilityState === "visible")
+        setTodaysQuestion(getTodaysQuestion());
+    }
+
+    return () =>
+      document.removeEventListener("visibilitychange", onVisibilityChange);
+  }, []);
+
+  function getTodaysQuestion() {
     // Their are 31 journaling questions, one for each day of the month
-    const dayOfMonthIndex = new Date().getDate() - 1;
-    return journalingQuestions[dayOfMonthIndex];
+    const dayOfMonth = new Date().getDate();
+    return journalingQuestions[dayOfMonth - 1];
   }
-  const journalingQuestion = getQuestionOfTheDay(questions);
 
   return (
     <>
       <div className="max-w-2xl mx-auto">
         <p className="text-center font-sans font-bold text-violet-600 text-2xl">
-          {journalingQuestion}
+          {todaysQuestion}
         </p>
       </div>
     </>
