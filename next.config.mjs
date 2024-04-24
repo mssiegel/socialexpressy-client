@@ -5,6 +5,8 @@ const withSerwist = withSerwistInit({
   // use something else that works, such as "service-worker/index.ts".
   swSrc: "app/sw.ts",
   swDest: "public/sw.js",
+  // disable Serwist in dev mode as the PWA service worker adds noisy console messages in dev mode
+  disable: (process.env.NEXT_PUBLIC_NODE_ENV = "development"),
 });
 
 /** @type {import('next').NextConfig} */
