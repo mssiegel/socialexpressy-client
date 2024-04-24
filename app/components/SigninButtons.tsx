@@ -59,7 +59,10 @@ const SigninButtons: FC<SigninButtonsProps> = ({
     try {
       const loginResponse = await fetch(`${SERVER_URL}/api/v1/users/login`, {
         method: "POST",
-        body: JSON.stringify({ firstName, lastName }),
+        body: JSON.stringify({
+          firstName: firstName.trim(),
+          lastName: lastName.trim(),
+        }),
         headers: { "Content-type": "application/json; charset=UTF-8" },
       });
       if (loginResponse.status === 404) {
@@ -69,7 +72,8 @@ const SigninButtons: FC<SigninButtonsProps> = ({
         return;
       }
       const { userId } = await loginResponse.json();
-      Cookies.set("userId", userId);
+      const ONE_YEAR = 365;
+      Cookies.set("userId", userId, { expires: ONE_YEAR });
       setUserId(String(userId));
       setLoginStatus(status.loggedIn);
       if (selectedGif) updateStreakAPICall(userId, setStreak);
