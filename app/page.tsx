@@ -13,7 +13,7 @@ export interface GiphyImage {
   id: string;
   images: {
     original: {
-      url: string;
+      webp: string;
     };
   };
 }

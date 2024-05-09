@@ -64,12 +64,12 @@ const GifDisplay: FC<GifDisplayProps> = ({
           {searchResults?.map((el: GiphyImage) => (
             <div key={el.id} className="">
               <Image
-                src={el.images.original.url}
+                src={el.images.original.webp}
                 alt="Sunset in the mountains"
                 width={300}
                 height={300}
                 unoptimized
-                onClick={() => selectGif(el.images.original.url)}
+                onClick={() => selectGif(el.images.original.webp)}
               />
             </div>
           ))}
