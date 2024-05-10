@@ -41,15 +41,15 @@ const JournalingPrompt: FC = () => {
   useEffect(() => {
     /* This "visibilitychange" event listener will update the daily question when user
        minifies the app on their device and then reopens it the next day */
-    document.addEventListener("visibilitychange", onVisibilityChange);
+    document.addEventListener("visibilitychange", ensureCorrectQuestion);
 
-    function onVisibilityChange() {
+    function ensureCorrectQuestion() {
       if (document.visibilityState === "visible")
         setTodaysQuestion(getTodaysQuestion());
     }
 
     return () =>
-      document.removeEventListener("visibilitychange", onVisibilityChange);
+      document.removeEventListener("visibilitychange", ensureCorrectQuestion);
   }, []);
 
   function getTodaysQuestion() {

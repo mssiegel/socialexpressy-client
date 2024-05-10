@@ -17,15 +17,16 @@ interface GifDisplayProps {
   setSelectedGif: Dispatch<SetStateAction<string>>;
 }
 
-export async function updateStreakAPICall(
+export async function updateJournalAPICall(
   userId: string,
+  gifUrl: string,
   setStreak: Dispatch<SetStateAction<Streak>>
 ) {
   // informs backend database that user journaled today
   const currentDate = new Date().toISOString();
-  fetch(`${SERVER_URL}/api/v1/users/${userId}/update-streak`, {
+  fetch(`${SERVER_URL}/api/v1/users/${userId}/journal`, {
     method: "PATCH",
-    body: JSON.stringify({ date: currentDate }),
+    body: JSON.stringify({ date: currentDate, lastGifUsed: gifUrl }),
     headers: { "Content-type": "application/json; charset=UTF-8" },
   })
     .then((result) => result.json())
@@ -46,7 +47,7 @@ const GifDisplay: FC<GifDisplayProps> = ({
     setSelectedGif(gifUrl);
     setSearchResults([]);
     if (!userId) return;
-    updateStreakAPICall(userId, setStreak);
+    updateJournalAPICall(userId, gifUrl, setStreak);
   }
 
   if (searchStatus === "PENDING")

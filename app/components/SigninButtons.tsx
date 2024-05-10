@@ -10,7 +10,7 @@ import {
 import Cookies from "js-cookie";
 
 import { Streak } from "../page";
-import { updateStreakAPICall } from "./GifDisplay";
+import { updateJournalAPICall } from "./GifDisplay";
 
 interface SigninButtonsProps {
   userId: string;
@@ -76,7 +76,7 @@ const SigninButtons: FC<SigninButtonsProps> = ({
       Cookies.set("userId", userId, { expires: ONE_YEAR });
       setUserId(String(userId));
       setLoginStatus(status.loggedIn);
-      if (selectedGif) updateStreakAPICall(userId, setStreak);
+      if (selectedGif) updateJournalAPICall(userId, selectedGif, setStreak);
     } catch (err) {
       setError("Error with login");
       console.log(err);

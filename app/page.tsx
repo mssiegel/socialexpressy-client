@@ -35,16 +35,51 @@ const Home: FC = () => {
   }, []);
 
   useEffect(() => {
-    // display the logged in user's streak on page load or when user logs in
+    /* This "visibilitychange" event listener will retrieve the user's journaling data
+       when the user minifies the app on their device and then reopens it later */
+    document.addEventListener("visibilitychange", retrieveJournalData);
+
+    function retrieveJournalData() {
+      if (document.visibilityState === "visible") retrieveUserJournalData;
+    }
+
+    return () =>
+      document.removeEventListener("visibilitychange", retrieveJournalData);
+  }, []);
+
+  useEffect(() => {
+    // retrieve a users journal data whenever the logged-in user changes
+    retrieveUserJournalData();
+  }, [userId]);
+
+  function retrieveUserJournalData() {
+    // retrieve the logged in user's streak and last journal entry
     if (!userId) return;
 
-    const currentDate = new Date().toISOString();
-    const dateParams = new URLSearchParams({ date: currentDate }).toString();
-    fetch(`${SERVER_URL}/api/v1/users/${userId}/streak?${dateParams}`)
+    const currentDate = new Date();
+    const dateParams = new URLSearchParams({
+      date: currentDate.toISOString(),
+    }).toString();
+    fetch(`${SERVER_URL}/api/v1/users/${userId}/journal?${dateParams}`)
       .then((result) => result.json())
-      .then((data) => setStreak(data.streak))
+      .then((data) => {
+        console.log(data);
+        setStreak(data.streak);
+        if (isSameDay(currentDate, new Date(data.lastJournalDate)))
+          // if the user already journaled today, then display the user's last journal entry
+          setSelectedGif(data.lastGifUsed);
+      })
       .catch((err) => console.log(err));
-  }, [userId]);
+  }
+
+  function isSameDay(date1: Date, date2: Date) {
+    // checks if two dates are the same day
+    return (
+      date1.getFullYear() === date2.getFullYear() &&
+      date1.getMonth() === date2.getMonth() &&
+      date1.getDate() === date2.getDate()
+    );
+  }
 
   return (
     <main>
