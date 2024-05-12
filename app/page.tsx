@@ -1,5 +1,5 @@
 "use client";
-import { FC, useEffect, useState } from "react";
+import { FC, useEffect, useState, Dispatch, SetStateAction } from "react";
 import Cookies from "js-cookie";
 
 import JournalingPrompt from "./components/JournalingPrompt";
@@ -20,18 +20,51 @@ export interface GiphyImage {
 export type Streak = "?" | number;
 export type RequestStatus = "ERROR" | "PENDING" | "NONE" | "FINISHED";
 
+export function retrieveUserJournalData(
+  userId: string,
+  setStreak: Dispatch<SetStateAction<Streak>>,
+  setSelectedGif: Dispatch<SetStateAction<string>>
+) {
+  // retrieve the logged in user's streak and last journal entry
+  const currentDate = new Date();
+  const dateParams = new URLSearchParams({
+    date: currentDate.toISOString(),
+  }).toString();
+  fetch(`${SERVER_URL}/api/v1/users/${userId}/journal?${dateParams}`)
+    .then((result) => result.json())
+    .then((data) => {
+      setStreak(data.streak);
+      if (isSameDay(currentDate, new Date(data.lastJournalDate)))
+        // if the user already journaled today, then display the user's last journal entry
+        setSelectedGif(data.lastGifUsed);
+    })
+    .catch((err) => console.log(err));
+
+  function isSameDay(date1: Date, date2: Date) {
+    // checks if two dates are the same day
+    return (
+      date1.getFullYear() === date2.getFullYear() &&
+      date1.getMonth() === date2.getMonth() &&
+      date1.getDate() === date2.getDate()
+    );
+  }
+}
+
 const Home: FC = () => {
   console.log("rendering home");
   const [streak, setStreak] = useState<Streak>("?");
   const [searchResults, setSearchResults] = useState<GiphyImage[]>([]);
   const [searchStatus, setSearchStatus] = useState<RequestStatus>("NONE");
   const [selectedGif, setSelectedGif] = useState("");
-  const [userId, setUserId] = useState(""); //
+  const [userId, setUserId] = useState("");
 
   useEffect(() => {
-    const savedUserId = Cookies.get("userId");
-    if (savedUserId) setUserId(savedUserId);
-    // setUserId(1) // uncomment to automatically login as user 1 Moshe Siegel
+    // retrieves the logged in users' journal data on page load
+    const loggedInUserId = Cookies.get("userId");
+    if (loggedInUserId) {
+      setUserId(loggedInUserId);
+      retrieveUserJournalData(loggedInUserId, setStreak, setSelectedGif);
+    }
   }, []);
 
   useEffect(() => {
@@ -46,40 +79,6 @@ const Home: FC = () => {
     return () =>
       document.removeEventListener("visibilitychange", retrieveJournalData);
   }, []);
-
-  useEffect(() => {
-    // retrieve a users journal data whenever the logged-in user changes
-    retrieveUserJournalData();
-  }, [userId]);
-
-  function retrieveUserJournalData() {
-    // retrieve the logged in user's streak and last journal entry
-    if (!userId) return;
-
-    const currentDate = new Date();
-    const dateParams = new URLSearchParams({
-      date: currentDate.toISOString(),
-    }).toString();
-    fetch(`${SERVER_URL}/api/v1/users/${userId}/journal?${dateParams}`)
-      .then((result) => result.json())
-      .then((data) => {
-        console.log(data);
-        setStreak(data.streak);
-        if (isSameDay(currentDate, new Date(data.lastJournalDate)))
-          // if the user already journaled today, then display the user's last journal entry
-          setSelectedGif(data.lastGifUsed);
-      })
-      .catch((err) => console.log(err));
-  }
-
-  function isSameDay(date1: Date, date2: Date) {
-    // checks if two dates are the same day
-    return (
-      date1.getFullYear() === date2.getFullYear() &&
-      date1.getMonth() === date2.getMonth() &&
-      date1.getDate() === date2.getDate()
-    );
-  }
 
   return (
     <main>
@@ -102,6 +101,7 @@ const Home: FC = () => {
         userId={userId}
         setUserId={setUserId}
         selectedGif={selectedGif}
+        setSelectedGif={setSelectedGif}
         setStreak={setStreak}
       />
     </main>

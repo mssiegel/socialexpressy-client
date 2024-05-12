@@ -11,11 +11,13 @@ import Cookies from "js-cookie";
 
 import { Streak } from "../page";
 import { updateJournalAPICall } from "./GifDisplay";
+import { retrieveUserJournalData } from "../page";
 
 interface SigninButtonsProps {
   userId: string;
   setUserId: Dispatch<SetStateAction<string>>;
   selectedGif: string;
+  setSelectedGif: Dispatch<SetStateAction<string>>;
   setStreak: Dispatch<SetStateAction<Streak>>;
 }
 
@@ -33,6 +35,7 @@ const SigninButtons: FC<SigninButtonsProps> = ({
   userId,
   setUserId,
   selectedGif,
+  setSelectedGif,
   setStreak,
 }) => {
   const [loginStatus, setLoginStatus] = useState<status>(status.loggedOut);
@@ -78,10 +81,11 @@ const SigninButtons: FC<SigninButtonsProps> = ({
       if (selectedGif)
         await updateJournalAPICall(userId, selectedGif, setStreak);
 
-      /* we set the userID *AFTER* updating our journal. This way, the useEffect for retrieving
-      user journal data on page.tsx will automatically fetch the latest updated journal for the user */
       setUserId(String(userId));
       setLoginStatus(status.loggedIn);
+      // we retrieve the user journal data *AFTER* updating our journal. This is so
+      // that we will automatically fetch the latest updated journal for the user
+      retrieveUserJournalData(String(userId), setStreak, setSelectedGif);
     } catch (err) {
       setError("Error with login");
       console.log(err);
