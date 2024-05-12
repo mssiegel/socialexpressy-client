@@ -9,7 +9,11 @@ import {
 } from "react";
 import Cookies from "js-cookie";
 
-import { retrieveUserJournalData, updateJournal } from "../journalServiceAPI";
+import {
+  loginAPICall,
+  retrieveUserJournalData,
+  updateJournal,
+} from "../journalServiceAPI";
 import { Streak } from "../types";
 
 interface SigninButtonsProps {
@@ -27,8 +31,6 @@ enum status {
   loggingIn = "LOGGING_IN",
   loggingOut = "LOGGING_OUT",
 }
-
-const SERVER_URL = process.env.NEXT_PUBLIC_SERVER_URL;
 
 const SigninButtons: FC<SigninButtonsProps> = ({
   userId,
@@ -58,36 +60,22 @@ const SigninButtons: FC<SigninButtonsProps> = ({
 
   async function login(e: FormEvent) {
     e.preventDefault();
-    try {
-      const loginResponse = await fetch(`${SERVER_URL}/api/v1/users/login`, {
-        method: "POST",
-        body: JSON.stringify({
-          firstName: firstName.trim(),
-          lastName: lastName.trim(),
-        }),
-        headers: { "Content-type": "application/json; charset=UTF-8" },
-      });
-      if (loginResponse.status === 404) {
-        setError(
-          `User not found; check spelling or ask Moshe Siegel to create you an account`
-        );
-        return;
-      }
-      const { userId } = await loginResponse.json();
-      const ONE_YEAR = 365;
-      Cookies.set("userId", userId, { expires: ONE_YEAR });
-
-      if (selectedGif) await updateJournal(userId, selectedGif, setStreak);
-
-      setUserId(String(userId));
-      setLoginStatus(status.loggedIn);
-      // we retrieve the user journal data *AFTER* updating our journal. This is so
-      // that we will automatically fetch the latest updated journal for the user
-      retrieveUserJournalData(String(userId), setStreak, setSelectedGif);
-    } catch (err) {
-      setError("Error with login");
-      console.log(err);
+    const userId = await loginAPICall(firstName, lastName, setError);
+    if (!userId) {
+      console.log("Login attempt failed");
+      return;
     }
+
+    const ONE_YEAR = 365;
+    Cookies.set("userId", userId, { expires: ONE_YEAR });
+
+    if (selectedGif) await updateJournal(userId, selectedGif, setStreak);
+
+    setUserId(String(userId));
+    setLoginStatus(status.loggedIn);
+    // we retrieve the user journal data *AFTER* updating our journal. This is so
+    // that we will automatically fetch the latest updated journal for the user
+    retrieveUserJournalData(String(userId), setStreak, setSelectedGif);
   }
 
   const loginForm = () => (

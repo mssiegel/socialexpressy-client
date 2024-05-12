@@ -50,3 +50,28 @@ export async function updateJournal(
     .then((data) => setStreak(data.streak))
     .catch((err) => console.log(err));
 }
+
+export async function loginAPICall(
+  firstName: string,
+  lastName: string,
+  setError: Dispatch<SetStateAction<string>>
+) {
+  const loginResponse = await fetch(`${SERVER_URL}/api/v1/users/login`, {
+    method: "POST",
+    body: JSON.stringify({
+      firstName: firstName.trim(),
+      lastName: lastName.trim(),
+    }),
+    headers: { "Content-type": "application/json; charset=UTF-8" },
+  });
+
+  if (loginResponse.status === 404) {
+    setError(
+      `User not found; check spelling or ask Moshe Siegel to create you an account`
+    );
+    return null;
+  }
+
+  const { userId } = await loginResponse.json();
+  return userId;
+}
