@@ -24,7 +24,7 @@ export async function updateJournalAPICall(
 ) {
   // informs backend database that user journaled today
   const currentDate = new Date().toISOString();
-  fetch(`${SERVER_URL}/api/v1/users/${userId}/journal`, {
+  await fetch(`${SERVER_URL}/api/v1/users/${userId}/journal`, {
     method: "PATCH",
     body: JSON.stringify({ date: currentDate, lastGifUsed: gifUrl }),
     headers: { "Content-type": "application/json; charset=UTF-8" },

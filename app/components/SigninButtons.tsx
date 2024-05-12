@@ -74,9 +74,14 @@ const SigninButtons: FC<SigninButtonsProps> = ({
       const { userId } = await loginResponse.json();
       const ONE_YEAR = 365;
       Cookies.set("userId", userId, { expires: ONE_YEAR });
+
+      if (selectedGif)
+        await updateJournalAPICall(userId, selectedGif, setStreak);
+
+      /* we set the userID *AFTER* updating our journal. This way, the useEffect for retrieving
+      user journal data on page.tsx will automatically fetch the latest updated journal for the user */
       setUserId(String(userId));
       setLoginStatus(status.loggedIn);
-      if (selectedGif) updateJournalAPICall(userId, selectedGif, setStreak);
     } catch (err) {
       setError("Error with login");
       console.log(err);
