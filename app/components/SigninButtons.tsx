@@ -9,9 +9,8 @@ import {
 } from "react";
 import Cookies from "js-cookie";
 
-import { Streak } from "../page";
-import { updateJournalAPICall } from "./GifDisplay";
-import { retrieveUserJournalData } from "../page";
+import { retrieveUserJournalData, updateJournal } from "../journalServiceAPI";
+import { Streak } from "../types";
 
 interface SigninButtonsProps {
   userId: string;
@@ -78,8 +77,7 @@ const SigninButtons: FC<SigninButtonsProps> = ({
       const ONE_YEAR = 365;
       Cookies.set("userId", userId, { expires: ONE_YEAR });
 
-      if (selectedGif)
-        await updateJournalAPICall(userId, selectedGif, setStreak);
+      if (selectedGif) await updateJournal(userId, selectedGif, setStreak);
 
       setUserId(String(userId));
       setLoginStatus(status.loggedIn);

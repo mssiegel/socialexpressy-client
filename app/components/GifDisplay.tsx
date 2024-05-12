@@ -3,9 +3,8 @@ import { FC, Dispatch, SetStateAction } from "react";
 import Masonry from "react-responsive-masonry";
 import Image from "next/image";
 
-import { GiphyImage, RequestStatus, Streak } from "../page";
-
-const SERVER_URL = process.env.NEXT_PUBLIC_SERVER_URL;
+import { updateJournal } from "../journalServiceAPI";
+import { GiphyImage, RequestStatus, Streak } from "../types";
 
 interface GifDisplayProps {
   userId: string;
@@ -15,23 +14,6 @@ interface GifDisplayProps {
   searchStatus: RequestStatus;
   selectedGif: string;
   setSelectedGif: Dispatch<SetStateAction<string>>;
-}
-
-export async function updateJournalAPICall(
-  userId: string,
-  gifUrl: string,
-  setStreak: Dispatch<SetStateAction<Streak>>
-) {
-  // informs backend database that user journaled today
-  const currentDate = new Date().toISOString();
-  await fetch(`${SERVER_URL}/api/v1/users/${userId}/journal`, {
-    method: "PATCH",
-    body: JSON.stringify({ date: currentDate, lastGifUsed: gifUrl }),
-    headers: { "Content-type": "application/json; charset=UTF-8" },
-  })
-    .then((result) => result.json())
-    .then((data) => setStreak(data.streak))
-    .catch((err) => console.log(err));
 }
 
 const GifDisplay: FC<GifDisplayProps> = ({
@@ -47,7 +29,7 @@ const GifDisplay: FC<GifDisplayProps> = ({
     setSelectedGif(gifUrl);
     setSearchResults([]);
     if (!userId) return;
-    updateJournalAPICall(userId, gifUrl, setStreak);
+    updateJournal(userId, gifUrl, setStreak);
   }
 
   if (searchStatus === "PENDING")

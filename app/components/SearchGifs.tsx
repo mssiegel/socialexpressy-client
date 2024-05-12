@@ -1,7 +1,7 @@
 "use client";
 import { FC, useState, FormEvent, Dispatch, SetStateAction } from "react";
 
-import { GiphyImage, RequestStatus } from "../page";
+import { GiphyImage, RequestStatus } from "../types";
 
 const GIPHY_API_KEY = process.env.NEXT_PUBLIC_GIPHY_API_KEY;
 

@@ -1,54 +1,13 @@
 "use client";
-import { FC, useEffect, useState, Dispatch, SetStateAction } from "react";
+import { FC, useEffect, useState } from "react";
 import Cookies from "js-cookie";
 
 import JournalingPrompt from "./components/JournalingPrompt";
 import SearchGifs from "./components/SearchGifs";
 import GifDisplay from "./components/GifDisplay";
 import SigninButtons from "./components/SigninButtons";
-
-const SERVER_URL = process.env.NEXT_PUBLIC_SERVER_URL;
-
-export interface GiphyImage {
-  id: string;
-  images: {
-    original: {
-      webp: string;
-    };
-  };
-}
-export type Streak = "?" | number;
-export type RequestStatus = "ERROR" | "PENDING" | "NONE" | "FINISHED";
-
-export function retrieveUserJournalData(
-  userId: string,
-  setStreak: Dispatch<SetStateAction<Streak>>,
-  setSelectedGif: Dispatch<SetStateAction<string>>
-) {
-  // retrieve the logged in user's streak and last journal entry
-  const currentDate = new Date();
-  const dateParams = new URLSearchParams({
-    date: currentDate.toISOString(),
-  }).toString();
-  fetch(`${SERVER_URL}/api/v1/users/${userId}/journal?${dateParams}`)
-    .then((result) => result.json())
-    .then((data) => {
-      setStreak(data.streak);
-      if (isSameDay(currentDate, new Date(data.lastJournalDate)))
-        // if the user already journaled today, then display the user's last journal entry
-        setSelectedGif(data.lastGifUsed);
-    })
-    .catch((err) => console.log(err));
-
-  function isSameDay(date1: Date, date2: Date) {
-    // checks if two dates are the same day
-    return (
-      date1.getFullYear() === date2.getFullYear() &&
-      date1.getMonth() === date2.getMonth() &&
-      date1.getDate() === date2.getDate()
-    );
-  }
-}
+import { retrieveUserJournalData } from "./journalServiceAPI";
+import { GiphyImage, RequestStatus, Streak } from "./types";
 
 const Home: FC = () => {
   console.log("rendering home");
